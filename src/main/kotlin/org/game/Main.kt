@@ -22,8 +22,7 @@ fun main(args : Array<String>) {
     }
     println("Let's play!")
 
-    val game = Game(numberOfPlayers, players)
+    val game = Game(numberOfPlayers, players, hintDatabase)
     game.playRound()
 }
 
-fun guessDifference(player: Player) {}

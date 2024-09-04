@@ -1,8 +1,11 @@
 package org.game
 
+import kotlin.math.abs
+
 class Game(
     val numberOfPlayers: Int,
     val players: List<Player>,
+    val hints : List<Hint>,
     var currentRound: Int = 1,
     val winningScore: Int? = 3) // this makes winning score set by default to three if not set up differently
 {
@@ -15,21 +18,56 @@ class Game(
             println("Category: ${hint.hintCategory}")
             println("Hint: ${hint.hintText}")
 
-                for (player in players) {
-                    playerGuess(player)
-                }
-            } else {
-                println("Gaby, there is a problem with DB.")
+            for (player in players) {
+                playerGuess(player)
             }
-        currentRound += 1
+
+            val winner = getWinner(hint)
+            if (winner != null) {
+                winner.score += 1
+                println("Winner of this round is ${winner.name}")
+                println("Correct answer was ${formatAnswer(hint.correctAnswer)}")
+            } else {
+                println("No winner.")
+            }
         }
+        currentRound += 1
+    }
 
     fun playerGuess(player: Player) {
         println("Hey, ${player.name}. It's your turn.")
         player.makeGuess { readLine() }
     }
 
+    fun guessDifference(player: Player, correctAnswer: Float): Float {
+        val guess = player.lastGuess?: Float.MAX_VALUE
+        val diff = abs(guess - correctAnswer)
+        return diff
     }
+
+    fun getWinner(hint : Hint): Player? {
+        val correctAnswer = hint.correctAnswer
+        var winner : Player? = null
+        var x : Float = Float.MAX_VALUE
+
+        for(player in players){
+            val diff = guessDifference(player, correctAnswer)
+            if(diff < x){
+                x = diff
+                winner = player
+            }
+        }
+        return winner
+    }
+
+    fun formatAnswer(answer: Float): String {
+        return if (answer % 1.0f == 0.0f) {
+            answer.toInt().toString()
+        } else {
+            answer.toString()
+        }
+    }
+}
 
 fun setNumberOfPlayers(getInput: () -> String?): Int {
     var validInput = false
@@ -54,4 +92,6 @@ fun setNumberOfPlayers(getInput: () -> String?): Int {
     }
     return numberPlayers
 }
+
+
 
