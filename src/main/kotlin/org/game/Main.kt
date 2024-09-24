@@ -23,6 +23,10 @@ fun main(args : Array<String>) {
     println("Let's play!")
 
     val game = Game(numberOfPlayers, players, hintDatabase)
-    game.playRound()
+    while (!game.checkForWinner(players)) {
+        game.playRound()
+        game.showScore(players)
+    }
+    game.showFinalScore(players)
 }
 

@@ -10,9 +10,11 @@ class Game(
     val winningScore: Int? = 3) // this makes winning score set by default to three if not set up differently
 {
     fun playRound() {
-        println("Round $currentRound")
-        println("Guess the number. Closest number to the correct answer wins a point.")
+        println("--------| Round $currentRound |--------")
 
+        if (currentRound == 1) {
+            println("How to play --> Guess the number. Closest number to the correct answer wins a point.")
+        }
         val hint = getRandomHint()
         if (hint != null) {
             println("Category: ${hint.hintCategory}")
@@ -26,10 +28,16 @@ class Game(
             if (winner != null) {
                 winner.score += 1
                 println("Winner of this round is ${winner.name}")
+                println("---------------------------------------")
+                println("${hint.funnyText}")
                 println("Correct answer was ${formatAnswer(hint.correctAnswer)}")
+                println("---------------------------------------")
             } else {
                 println("No winner.")
             }
+        } else {
+            println("No hints left! The game is over.")
+            return
         }
         currentRound += 1
     }
@@ -60,12 +68,47 @@ class Game(
         return winner
     }
 
+    fun checkForWinner(array: MutableList<Player>): Boolean {
+        for(player in array){
+            if (player.score == winningScore){
+                return true
+            }
+        }
+        return false
+    }
+
     fun formatAnswer(answer: Float): String {
         return if (answer % 1.0f == 0.0f) {
             answer.toInt().toString()
         } else {
             answer.toString()
         }
+    }
+
+    fun showScore(array: MutableList<Player>) {
+        var x = 1
+        array.sortByDescending { it.score }
+        println("----- Scoreboard: -----")
+        for (player in array) {
+            println("$x. ${player.name} -> ${player.score} point/s")
+            x++
+        }
+        println("-----------------------")
+    }
+
+    fun showFinalScore(array: MutableList<Player>) {
+        var x = 1
+        array.sortByDescending { it.score }
+        println("----- Scoreboard: -----")
+        for (player in array) {
+            if (x==1){
+                println("*** WINNER *** is ${player.name}")
+            }
+            println("$x. ${player.name} -> ${player.score} point/s")
+            x++
+        }
+        println("-----------------------")
+        println("Thank you for playing!")
     }
 }
 
